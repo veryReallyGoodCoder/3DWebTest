@@ -36,9 +36,9 @@ const planet = new THREE.Mesh(planetGeometry, planetMaterial);
 planet.position.set(-50, 10, 50);
 
 // add a simple light to see the planet
-const planetLight = new THREE.PointLight(0xffffff, 1, 200);
+/*const planetLight = new THREE.PointLight(0xffffff, 1, 200);
 planetLight.position.set(30, 50, -50);
-scene.add(planetLight);
+scene.add(planetLight);*/
 
 // add the planet to the scene
 scene.add(planet);
@@ -117,7 +117,25 @@ document.addEventListener('mousemove', (event) => {
 });*/
 
 
+//click events
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
 
+function onMouseClick(event) {
+  // normalize mouse coords (-1 to +1)
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+  raycaster.setFromCamera(mouse, camera);
+  const intersects = raycaster.intersectObjects([planet]);
+
+  if (intersects.length > 0) {
+    // go to media.html
+    window.location.href = "HTML/gallery.html";
+  }
+}
+
+window.addEventListener('click', onMouseClick);
 
 
 //key events
