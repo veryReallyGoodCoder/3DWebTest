@@ -3,6 +3,7 @@ import './style.css'
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/Addons.js';
 import { add } from 'three/examples/jsm/nodes/Nodes.js';
+import { LatheGeometry } from 'three';
 
 
 //scene setup
@@ -15,8 +16,10 @@ const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerH
 
 
 // GEOMETRY
+
+//grid
 const gridHelper = new THREE.GridHelper(200, 50);
-scene.add(gridHelper);
+//scene.add(gridHelper);
 
 //cube
 const geometry = new THREE.BoxGeometry(1,1,1);
@@ -25,14 +28,11 @@ const cube = new THREE.Mesh(geometry, mat1);
 scene.add(cube);
 
 //planets
-const planetGeometry = new THREE.SphereGeometry(5, 32, 32); // radius 5, smooth
+const planetGeometry = new THREE.SphereGeometry(5, 32, 32); 
 const planetMaterial = new THREE.MeshBasicMaterial({ color: 0x3399ff , wireframe: false
 });
-
-// create the mesh
 const planet = new THREE.Mesh(planetGeometry, planetMaterial);
 
-// position it away from the cube
 planet.position.set(-50, 10, 50);
 
 // add a simple light to see the planet
@@ -42,6 +42,125 @@ scene.add(planetLight);*/
 
 // add the planet to the scene
 scene.add(planet);
+
+//torus knot
+const tGeometry = new THREE.TorusKnotGeometry (10, 3, 100, 16);
+const tMat = new THREE.MeshBasicMaterial( { color: 0xffff00, wireframe: true } );
+const torusKnot = new THREE.Mesh(tGeometry, tMat);
+torusKnot.position.set(50, 20, 10);
+
+scene.add(torusKnot);
+
+//David
+/*function createDavidBust() {
+  // profile curve (x = radius, y = height)
+  const pts = [
+    new THREE.Vector2(0.0, 0.0),   // center bottom (base)
+    new THREE.Vector2(2.8, 0.0),   // chest
+    new THREE.Vector2(3.5, 1.5),   // shoulders
+    new THREE.Vector2(2.6, 3.5),   // narrowing into neck base
+    new THREE.Vector2(1.8, 5.0),   // neck
+    new THREE.Vector2(2.0, 6.5),   // jaw
+    new THREE.Vector2(1.5, 7.5),   // chin area
+    new THREE.Vector2(1.4, 8.4),   // mouth level
+    new THREE.Vector2(1.6, 9.2),   // nose level (slight bulge)
+    new THREE.Vector2(1.3, 10.2),  // eyes/brow line
+    new THREE.Vector2(2.0, 11.5),  // hair mass outward
+    new THREE.Vector2(2.6, 12.2),  // crown of hair
+    new THREE.Vector2(1.2, 13.0),  // taper top inward
+    new THREE.Vector2(0.0, 13.4)   // close at top
+  ];
+
+  const bustGeo = new LatheGeometry(pts, 96); // smoother segments
+  bustGeo.computeVertexNormals();
+
+  const bustMat = new THREE.MeshStandardMaterial({
+    color: 0xf0f0f0,        // marble-like white
+    roughness: 0.55,
+    metalness: 0.05,
+    flatShading: false
+  });
+
+  const bustMesh = new THREE.Mesh(bustGeo, bustMat);
+  bustMesh.name = "davidBust";
+  bustMesh.position.set(-10, 0, -20);
+  bustMesh.scale.set(1.2, 1.2, 1.2);
+  bustMesh.castShadow = true;
+  bustMesh.receiveShadow = true;
+
+  return bustMesh;
+}
+
+const davidBust = createDavidBust();
+scene.add(davidBust);
+
+const rimLight = new THREE.DirectionalLight(0xffffff, 0.6);
+rimLight.position.set(-20, 30, -15);
+scene.add(rimLight);
+
+const fillLight = new THREE.AmbientLight(0xffffff, 0.3);
+scene.add(fillLight);
+
+// optional: gentle rotation to show the bust (or handle in animate loop)
+davidBust.rotation.z = 0; // leave static if you prefer
+*/
+
+//David new
+
+function createBust(){
+  const bust = new THREE.Group();
+
+  const headGeometry = new THREE.SphereGeometry(1, 32, 32, 0, Math.PI * 2, 0, Math.PI / 2);
+  headGeometry.scale(.8, 1, .9);
+  const headMaterial = new THREE.MeshBasicMaterial({color: 0x61223b, roughness: 0.5, metalness: 0.2});
+  const head = new THREE.Mesh(headGeometry, headMaterial);
+  head.position.y = 0.5;
+  bust.add(head);
+
+  const neckGeometry = new THREE.CylinderGeometry(0.4, 0.5, 0.6, 16);
+  const neck = new THREE.Mesh(neckGeometry, headMaterial);
+  neck.position.y = -0.3;
+  bust.add(neck);
+
+  const shouldersGeometry = new THREE.BoxGeometry(3, 1.2, 1.5, 4, 4, 4);
+  shouldersGeometry.scale(1, 0.7, 0.8);
+  const shoulders = new THREE.Mesh(shouldersGeometry, headMaterial);
+  shoulders.position.y = -1.1;
+  bust.add(shoulders);
+
+  const hairGeometry = new THREE.SphereGeometry(0.85, 32, 32, 0, Math.PI * 2, 0, Math.PI / 2);
+  hairGeometry.scale(0.9, 0.5, 0.9);
+  const hair = new THREE.Mesh(hairGeometry, new THREE.MeshBasicMaterial({
+    color: 0xffff00,
+    roughness: 0.8,
+    metalness: 0.1
+  }));
+  hair.position.y = 1.005;
+  hair.position.z = 0.1;
+  bust.add(hair);
+
+  const baseGeometry = new THREE.CylinderGeometry(1.8, 2, 0.4, 16);
+  const base = new THREE.Mesh(baseGeometry, new THREE.MeshBasicMaterial({
+    color: 0x555555,
+    roughness: 0.3,
+    metalness: 0.7
+  }));
+  base.position.y = -1.8;
+  bust.add(base);
+
+  const pedestalGeometry = new THREE.CylinderGeometry(2.5, 3, 0.8, 16);
+  const pedestal = new THREE.Mesh(pedestalGeometry, new THREE.MeshBasicMaterial({
+            color: 0x333333,
+            roughness: 0.4,
+            metalness: 0.6
+        }));
+        pedestal.position.y = -2.4;
+        bust.add(pedestal);
+
+  scene.add(bust);
+}
+
+createBust();
 
 //stars
 
@@ -127,12 +246,18 @@ function onMouseClick(event) {
   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
   raycaster.setFromCamera(mouse, camera);
-  const intersects = raycaster.intersectObjects([planet]);
 
-  if (intersects.length > 0) {
-    // go to media.html
+  const planetIntersects = raycaster.intersectObject(planet, true);
+
+  if (planetIntersects.length > 0) {
     window.location.href = "HTML/gallery.html";
   }
+
+  const torusIntersects = raycaster.intersectObject(torusKnot, true);
+  if(torusIntersects.length > 0){
+    window.location.href = "HTML/davidBust.html";
+  }
+
 }
 
 window.addEventListener('click', onMouseClick);
@@ -170,6 +295,10 @@ function animate(){
   cube.rotation.x = (cube.rotation.x + delta * 0.1) % (Math.PI * 2);
   cube.rotation.y = (cube.rotation.y + delta * 0.1) % (Math.PI * 2);
   
+
+  torusKnot.rotation.y = (torusKnot.rotation.y + delta * 0.5) % (Math.PI * 2);
+  torusKnot.rotation.z = (torusKnot.rotation.z + delta * 0.5) % (Math.PI * 2);
+
   //cube.rotation.x += 0.0001;
   //cube.rotation.y += 0.0001;
 
