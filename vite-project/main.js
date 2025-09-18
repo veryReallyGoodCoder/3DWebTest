@@ -18,7 +18,7 @@ const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerH
 // GEOMETRY
 
 //grid
-const gridHelper = new THREE.GridHelper(200, 50);
+//const gridHelper = new THREE.GridHelper(200, 50);
 //scene.add(gridHelper);
 
 //cube
@@ -29,11 +29,10 @@ scene.add(cube);
 
 //planets
 const planetGeometry = new THREE.SphereGeometry(5, 32, 32); 
-const planetMaterial = new THREE.MeshBasicMaterial({ color: 0x3399ff , wireframe: false
-});
+const planetMaterial = new THREE.MeshBasicMaterial({ color: 0x3399ff});
 const planet = new THREE.Mesh(planetGeometry, planetMaterial);
 
-planet.position.set(-50, 10, 50);
+planet.position.set(-50, 10, 100);
 
 // add a simple light to see the planet
 /*const planetLight = new THREE.PointLight(0xffffff, 1, 200);
@@ -44,7 +43,7 @@ scene.add(planetLight);*/
 scene.add(planet);
 
 //torus knot
-const tGeometry = new THREE.TorusKnotGeometry (10, 3, 100, 16);
+const tGeometry = new THREE.TorusKnotGeometry (5, 1, 80, 8);
 const tMat = new THREE.MeshBasicMaterial( { color: 0xffff00, wireframe: true } );
 const torusKnot = new THREE.Mesh(tGeometry, tMat);
 torusKnot.position.set(50, 20, 10);
@@ -298,6 +297,8 @@ function animate(){
 
   torusKnot.rotation.y = (torusKnot.rotation.y + delta * 0.5) % (Math.PI * 2);
   torusKnot.rotation.z = (torusKnot.rotation.z + delta * 0.5) % (Math.PI * 2);
+
+  planet.position.applyAxisAngle(new THREE.Vector3(0,1,0), 0.0001);
 
   //cube.rotation.x += 0.0001;
   //cube.rotation.y += 0.0001;
