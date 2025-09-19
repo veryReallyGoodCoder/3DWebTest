@@ -354,12 +354,12 @@ function onMouseClick(event) {
   const planetIntersects = raycaster.intersectObject(planet, true);
 
   if (planetIntersects.length > 0) {
-    window.location.href = "HTML/about.html";
+    window.location.href = "/HTML/about.html";
   }
 
   const torusIntersects = raycaster.intersectObject(torusKnot, true);
   if(torusIntersects.length > 0){
-    window.location.href = "HTML/gallery.html";
+    window.location.href = "/HTML/gallery.html";
   }
 
 }
