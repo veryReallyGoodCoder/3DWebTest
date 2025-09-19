@@ -32,7 +32,7 @@ const planetGeometry = new THREE.SphereGeometry(5, 32, 32);
 const planetMaterial = new THREE.MeshBasicMaterial({ color: 0x3399ff});
 const planet = new THREE.Mesh(planetGeometry, planetMaterial);
 
-planet.position.set(-50, 10, 100);
+planet.position.set(-50, 10, 250);
 
 // add a simple light to see the planet
 /*const planetLight = new THREE.PointLight(0xffffff, 1, 200);
@@ -180,7 +180,112 @@ function createStars() {
   scene.add(stars);
 }
 
+
 createStars();
+
+function createConstellations() {
+  const starMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 1.2 });
+  const constellationGroup = new THREE.Group();
+
+  // Example constellations (simple approximations in 3D space)
+  const constellations = {
+    "Orion": [
+      [0, 0, 0], [10, 15, 0], [20, 0, 0], [5, -15, 0], [15, -15, 0], [25, -5, 0]
+    ],
+    "Ursa Major": [
+      [0, 0, 0], [10, 5, 0], [20, 10, 0], [30, 15, 0],
+      [25, 25, 0], [15, 20, 0], [5, 15, 0]
+    ],
+    "Cassiopeia": [
+      [0, 0, 0], [10, 5, 0], [20, -5, 0], [30, 10, 0], [40, 0, 0]
+    ]
+  };
+
+  Object.entries(constellations).forEach(([name, coords], index) => {
+    const starGeometry = new THREE.BufferGeometry();
+    const starVertices = [];
+    const starsArray = [];
+
+    // Offset each constellation so they're spread out in the sky
+    const offsetX = THREE.MathUtils.randFloatSpread(800);
+    const offsetY = THREE.MathUtils.randFloatSpread(800);
+    const offsetZ = THREE.MathUtils.randFloatSpread(800);
+
+    coords.forEach(([x, y, z]) => {
+      const px = x + offsetX;
+      const py = y + offsetY;
+      const pz = z + offsetZ;
+      starVertices.push(px, py, pz);
+      starsArray.push(new THREE.Vector3(px, py, pz));
+    });
+
+    // Add stars
+    starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starVertices, 3));
+    const stars = new THREE.Points(starGeometry, starMaterial);
+    constellationGroup.add(stars);
+
+    // Add connecting lines
+    const lineMaterial = new THREE.LineBasicMaterial({ color: 0x88ccff, transparent: true, opacity: 0.8 });
+    const lineGeometry = new THREE.BufferGeometry().setFromPoints(starsArray);
+    const line = new THREE.Line(lineGeometry, lineMaterial);
+    constellationGroup.add(line);
+  });
+
+  scene.add(constellationGroup);
+}
+
+// Call instead of createStars()
+createConstellations();
+
+
+createConstellations();
+
+function createNebulae() {
+  const nebulaGroup = new THREE.Group();
+
+  // Create a radial gradient texture for the nebula
+  const canvas = document.createElement("canvas");
+  canvas.width = 256;
+  canvas.height = 256;
+  const ctx = canvas.getContext("2d");
+
+  const gradient = ctx.createRadialGradient(128, 128, 20, 128, 128, 128);
+  gradient.addColorStop(0, "rgba(255, 150, 200, 0.8)"); // bright core
+  gradient.addColorStop(0.5, "rgba(100, 50, 150, 0.5)"); // mid tones
+  gradient.addColorStop(1, "rgba(0, 0, 0, 0)"); // fade out
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, 256, 256);
+
+  const nebulaTexture = new THREE.CanvasTexture(canvas);
+
+  // Generate 3 nebulae
+  for (let i = 0; i < 3; i++) {
+    const material = new THREE.SpriteMaterial({
+      map: nebulaTexture,
+      transparent: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+    });
+
+    const nebula = new THREE.Sprite(material);
+
+    nebula.position.set(
+      THREE.MathUtils.randFloatSpread(6000),
+      THREE.MathUtils.randFloatSpread(6000),
+      THREE.MathUtils.randFloatSpread(6000)
+    );
+
+    const scale = THREE.MathUtils.randFloat(400, 800);
+    nebula.scale.set(scale, scale, 1);
+
+    nebulaGroup.add(nebula);
+  }
+
+  scene.add(nebulaGroup);
+}
+
+createNebulae();
+
 
 /*function addStar(){
   const geometry = new THREE.SphereGeometry(0.25, 10, 10);
@@ -249,12 +354,12 @@ function onMouseClick(event) {
   const planetIntersects = raycaster.intersectObject(planet, true);
 
   if (planetIntersects.length > 0) {
-    window.location.href = "HTML/gallery.html";
+    window.location.href = "HTML/about.html";
   }
 
   const torusIntersects = raycaster.intersectObject(torusKnot, true);
   if(torusIntersects.length > 0){
-    window.location.href = "HTML/davidBust.html";
+    window.location.href = "HTML/gallery.html";
   }
 
 }
@@ -298,7 +403,7 @@ function animate(){
   torusKnot.rotation.y = (torusKnot.rotation.y + delta * 0.5) % (Math.PI * 2);
   torusKnot.rotation.z = (torusKnot.rotation.z + delta * 0.5) % (Math.PI * 2);
 
-  planet.position.applyAxisAngle(new THREE.Vector3(0,1,0), 0.0001);
+  planet.position.applyAxisAngle(new THREE.Vector3(0,1,0), 0.00001);
 
   //cube.rotation.x += 0.0001;
   //cube.rotation.y += 0.0001;
